@@ -19,7 +19,8 @@ typedef tokenizer <char_separator<char> > tok
 
 //void bash(int agrc, char const *argv[])
 void readcmd (const string input)
-
+void make (const string input, const char sep[])
+void excbash(const string input)
 int main()
 {
     string input;
@@ -51,35 +52,108 @@ int main()
 
 	return 0;
 }
-
-
 void readcmd(const string input)
 {
-    int flag&& = 0;
-    int flag|| = 0;
-	char* commands = new char [input.length() + 1];
-    strcpy(commands, input.c_str());
-    for(int pos = 0; pos < strlen(commands); pos++)
-    {
-        if (commands[pos] == '&')
+    char sep& = "&&";
+    char sep; == ";";
+    char sep|| == "||";
+    
+        if(input.find("&&") != string::npos)
         {
-            if (commands[pos + 1] == '&')
-            {
-                flag&& = 1;
-            }
+        excbash(input,sep&&);
         }
-        if(commands[pos] == '|')
+        else if(input.find("||") != string::npos)
         {
-            if commands[pos + 1]
+            excbash(input,sep||);
+        }
+        else if(input.find(";") != string::npos)
+        {
+            excbash(input,sep;);
+        }
+}
+
+void make(const string input, const char sep[])
+{
+    char_separator<char> delim(sep);
+    tok tokens(input, delim);
+
+    for(tok::iterator it = tokens.begin(); it != tokens.end(); it++)
+    {
+        int pid = fork();
+        if(pid == -1)
+        {
+            perror("fork failed");
+            exit(1);
+        }
+        else if (pid == 0)
+        {
+            string command = *it;
+            excbash(command);
+        }
+        else
+        {
+            if(wait(0) == -1)
             {
-                flag|| = 1;
+                perror("wait failed");
+                exit(1);
             }
         }
     }
-    
-    char connector[] = ";||&&);
-    	
 }
+
+void excbash(const string input)
+{
+    char *argv[100];
+    int count = 0;
+    char_separator<char> space(" ");
+    
+    tok tokens(input, space);
+    for(tok::iterator it = tokens.begin(); it != tokens.end(); it++)
+    {
+        argv[count] = new char[(*it).size()];
+        strcpy(argv[count], (*it).c_str());
+        count++;
+    }
+
+    argv[count] = 0;
+    if (execvp(argv[0], argv) == -1)
+    {
+        perror("execvp failed");
+        exit(1);
+    }
+}
+
+
+
+
+
+//void readcmd(const string input)
+//{
+//    int flag&& = 0;
+//    int flag|| = 0;
+//	char* commands = new char [input.length() + 1];
+//    strcpy(commands, input.c_str());
+//    for(int pos = 0; pos < strlen(commands); pos++)
+//    {
+//        if (commands[pos] == '&')
+//        {
+//           if (commands[pos + 1] == '&')
+//            {
+//                flag&& = 1;
+//            }
+//        }
+//        if(commands[pos] == '|')
+      //  {
+    //        if commands[pos + 1]
+    //            {
+  //              flag|| = 1;
+//           }
+//        }
+//    }
+//    
+//    char connector[] = ";||&&);
+//    	
+//}
 
 //void bash(int agrc, char const*argv[])
 //{
