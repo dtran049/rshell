@@ -137,38 +137,4 @@ void excbash(const string input)
 }
 
 
-
-
-
-//void readcmd(const string input)
-//{
-//    int flag&& = 0;
-//    int flag|| = 0;
-//	char* commands = new char [input.length() + 1];
-//    strcpy(commands, input.c_str());
-//    for(int pos = 0; pos < strlen(commands); pos++)
-//    {
-//        if (commands[pos] == '&')
-//        {
-//           if (commands[pos + 1] == '&')
-//            {
-//                flag&& = 1;
-//            }
-//        }
-//        if(commands[pos] == '|')
-      //  {
-    //        if commands[pos + 1]
-    //            {
-  //              flag|| = 1;
-//           }
-//        }
-//    }
-//    
-//    char connector[] = ";||&&);
-//    	
-//}
-
-//void bash(int agrc, char const*argv[])
-//{
-//
-//}
+}
