@@ -11,30 +11,43 @@
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
 #include <errno.h>
-
+#include <cstdlib>
 using namespace std;
 using namespace boost;
 
-typedef tokenizer <char_separator<char> > tok
+#define tok tokenizer<char_separator<char> >
+//typedef tokenizer <char_separator<char> > tok
 
 //void bash(int agrc, char const *argv[])
-void readcmd (const string input)
-void make (const string input, const char sep[])
-void excbash(const string input)
+void readcmd (const string input);
+void make (const string input, const char sep[]);
+void excbash(const string input);
 int main()
 {
+    //cout << "error here";
     string input;
     //get userid and hostname
-	string hostname = gethostname();
+    char hostname[128];
+	gethostname(hostname, sizeof(hostname));
+    if (gethostname(hostname, sizeof(hostname)))
+    {
+        perror("gethostname() failed");
+    }
+    
 	string loginID = getlogin();
+    if (NULL == getlogin())
+    {
+        perror("getlogin() failed");
+    }
 	//cout << "Hostname: " << endl;
-	//getline(cin, hostname);
+    //getline(cin, hostname);
 	//cout << "Login ID: " << endl;
 	//getline(cin,loginID);
-	bool exit = true;
-	while(!exit)
+	bool escape = false;
+	//cout << "error here";
+    while(!escape)
 	{
-		cout << loginID << "@" << hostname << " $ ";
+		cout <<loginID << "@" << "hostname" << " $ ";
 		getline(cin, input);
 		trim(input);
 		if(input == "exit")
@@ -49,26 +62,26 @@ int main()
 		{
 			readcmd(input);
 		}
-
+    }
 	return 0;
 }
 void readcmd(const string input)
 {
-    char sep& = "&&";
-    char sep; == ";";
-    char sep|| == "||";
+    char sepand[] = "&&";
+    char sepsemi[] = ";";
+    char sepor[]  = "||";
     
         if(input.find("&&") != string::npos)
         {
-        excbash(input,sep&&);
+            make(input,sepand);
         }
         else if(input.find("||") != string::npos)
         {
-            excbash(input,sep||);
+            make(input,sepor);
         }
         else if(input.find(";") != string::npos)
         {
-            excbash(input,sep;);
+            make(input,sepsemi);
         }
 }
 
