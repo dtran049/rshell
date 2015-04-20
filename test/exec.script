@@ -1,0 +1,195 @@
+Script started on Sun 19 Apr 2015 07:36:54 PM PDT
+~
+dtran049@hammer $ cd[K[Kcs100
+[0;91m
+===============================================================================
+|                                                                             |
+| You have enabled settings specific for cs100.  Everything you do is being   |
+| recorded to measure your progress in the class.                             |
+|                                                                             |
+| Important commands for the class:                                           |
+|   * calcgrade.sh          displays a detailed breakdown of your grade       |
+|   * typespeed             practice typing unix commands                     |
+|                                                                             |
+| Important commands for general C++ programming:                             |
+|   * make                  don't call g++ manually; let make do the work!    |
+|   * gdb                   the GNU debugger                                  |
+|   * valgrind              get rid of your memory leaks                      |
+|   * cppcheck              static analysis tool                              |
+|   * man                   find help about any syscall / terminal command    |
+|                                                                             |
+===============================================================================
+[0m
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~[0;95m [0;36m$[0m cd cs100
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~/cs100[0;95m (master) [0;36m$[0m cd rshell
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~/cs100/rshell[0;95m (master) [0;36m$[0m make
+mkdir -p ./bin
+g++ -Wall -Werror -ansi  -pedantic ./src/rshell.cpp -o ./bin/rshell
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~/cs100/rshell[0;95m (master) [0;36m$[0m bin/rshell
+dtran049@hostname $ #testing commands with flags
+dtran049@hostname $ ls# 
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $ ls -a
+bin  LICENSE  makefile	README.md  src	test
+execvp failed: No such file or directory
+dtran049@hostname $ ls -l
+bin  LICENSE  makefile	README.md  src	test
+execvp failed: No such file or directory
+dtran049@hostname $ ls.  .
+bin  LICENSE  makefile	README.md  src	test
+execvp failed: Permission denied
+dtran049@hostname $ ls -a -a -a -a -a -a -a -a -a -a
+bin  LICENSE  makefile	README.md  src	test
+execvp failed: No such file or directory
+execvp failed: No such file or directory
+execvp failed: No such file or directory
+execvp failed: No such file or directory
+execvp failed: No such file or directory
+execvp failed: No such file or directory
+execvp failed: No such file or directory
+execvp failed: No such file or directory
+execvp failed: No such file or directory
+execvp failed: No such file or directory
+dtran049@hostname $ ls ls ls ls ls ls ls ls ls ls ls
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $ #test     testing commands with white space
+dtran049@hostname $ ls                ^[[D     
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $                        ls
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $ ls -a            ls
+bin  LICENSE  makefile	README.md  src	test
+execvp failed: No such file or directory
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $ sl  ls                -a
+bin  LICENSE  makefile	README.md  src	test
+execvp failed: No such file or directory
+dtran049@hostname $ #r testing        testing echo
+dtran049@hostname $ cho c     echo echo
+
+
+dtran049@hostname $ echo hi
+
+execvp failed: No such file or directory
+dtran049@hostname $ #testing connectors a w and logic                             #testing bad commands
+dtran049@hostname $ dsfasdfa
+execvp failed: No such file or directory
+dtran049@hostname $ ds  lsa
+execvp failed: No such file or directory
+dtran049@hostname $ # testing connectors with logic
+dtran049@hostname $ ls &&     ; ls
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $ ls  ; lsa
+bin  LICENSE  makefile	README.md  src	test
+execvp failed: No such file or directory
+dtran049@hostname $ lsa:ls
+execvp failed: No such file or directory
+dtran049@hostname $ lsa;ls
+execvp failed: No such file or directory
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $ ls && ls -a
+bin  LICENSE  makefile	README.md  src	test
+.  ..  bin  .git  LICENSE  makefile  README.md	src  test
+dtran049@hostname $ lsa && ls -a
+execvp failed: No such file or directory
+.  ..  bin  .git  LICENSE  makefile  README.md	src  test
+dtran049@hostname $ ls -a && ls
+.  ..  bin  .git  LICENSE  makefile  README.md	src  test
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $ ls -a && lsa
+.  ..  bin  .git  LICENSE  makefile  README.md	src  test
+execvp failed: No such file or directory
+dtran049@hostname $ ls -a || ls
+.  ..  bin  .git  LICENSE  makefile  README.md	src  test
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $ ls -a || lsa
+.  ..  bin  .git  LICENSE  makefile  README.md	src  test
+execvp failed: No such file or directory
+dtran049@hostname $ ls  a || lsa
+execvp failed: No such file or directory
+execvp failed: No such file or directory
+dtran049@hostname $ lsa || ls -a
+execvp failed: No such file or directory
+.  ..  bin  .git  LICENSE  makefile  README.md	src  test
+dtran049@hostname $ #testing connectors with other commands
+dtran049@hostname $ ls && echo hi && pa && cal
+bin  LICENSE  makefile	README.md  src	test
+hi
+execvp failed: No such file or directory
+     April 2015     
+Su Mo Tu We Th Fr Sa
+          1  2  3  4
+ 5  6  7  8  9 10 11
+12 13 14 15 16 17 18
+[7m19[m 20 21 22 23 24 25
+26 27 28 29 30
+
+dtran049@hostname $ ps    # ls || ps || ls -a || pw  cal
+bin  LICENSE  makefile	README.md  src	test
+  PID TTY          TIME CMD
+45962 pts/82   00:00:00 bash
+46050 pts/82   00:00:00 rshell
+47293 pts/82   00:00:00 ps
+.  ..  bin  .git  LICENSE  makefile  README.md	src  test
+     April 2015     
+Su Mo Tu We Th Fr Sa
+          1  2  3  4
+ 5  6  7  8  9 10 11
+12 13 14 15 16 17 18
+[7m19[m 20 21 22 23 24 25
+26 27 28 29 30
+
+dtran049@hostname $ #testing conn    mul   different connectors in one line
+dtran049@hostname $ echo    ls || ls && ls  ; ls
+ls: cannot access ||: No such file or directory
+ls: cannot access ls: No such file or directory
+execvp failed: No such file or directory
+dtran049@hostname $ ls  ; ||  ls || ls && ls
+execvp failed: No such file or directory
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $ ls && ls ; ls || ls
+bin  LICENSE  makefile	README.md  src	test
+ls: cannot access ;: No such file or directory
+ls: cannot access ls: No such file or directory
+ls: cannot access ||: No such file or directory
+ls: cannot access ls: No such file or directory
+dtran049@hostname $ #testing connectors with white space
+dtran049@hostname $ s ls \             ;           ls -a
+bin  LICENSE  makefile	README.md  src	test
+.  ..  bin  .git  LICENSE  makefile  README.md	src  test
+dtran049@hostname $               ls  ;           && ls
+execvp failed: No such file or directory
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $ ls     && ls                & ls   & ls
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+bin  LICENSE  makefile	README.md  src	test
+dtran049@hostname $ test    #tesi ting rshell rn uning in rshell
+dtran049@hostname $ make
+mkdir -p ./bin
+g++ -Wall -Werror -ansi  -pedantic ./src/rshell.cpp -o ./bin/rshell
+dtran049@hostname $ bin/rshell
+dtran049@hostname $ #in second rshell
+dtran049@hostname $ #e    #exit second shell
+dtran049@hostname $ exit
+dtran049@hostname $ #testing rhs  shell        exit wit        #exit and then exit fo or real
+dtran049@hostname $ #exit
+dtran049@hostname $ exit
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~/cs100/rshell[0;95m (master) [0;36m$[0m exit
+exit
+~
+dtran049@hammer $ exit
+exit
+
+Script done on Sun 19 Apr 2015 07:46:00 PM PDT
