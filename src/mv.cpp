@@ -140,6 +140,7 @@ int main(int argc, char **argv)
         }
         else
         {
+            cout << "error:" << file2 << " exists but not a directory" << endl;
             return 1;
         }
     }
@@ -148,5 +149,6 @@ int main(int argc, char **argv)
         //do things
         mv(file1, file2);
     }
-
+    return 0;
 }
+
