@@ -19,9 +19,10 @@ using namespace boost;
 //typedef tokenizer <char_separator<char> > tok
 
 //void bash(int agrc, char const *argv[])
-void readcmd (const string input);
-void make (const string input, const char sep[]);
-void excbash(const string input);
+void readcmd (const string &input);
+void make (const string &input, const char sep[]);
+void excbash(const string &input);
+void piper(const string  &input);
 int main()
 {
     //cout << "error here";
@@ -65,7 +66,7 @@ int main()
     }
 	return 0;
 }
-void readcmd(const string input)
+void readcmd(const string &input)
 {
     char sepand[] = "&&";
     char sepsemi[] = ";";
@@ -83,13 +84,18 @@ void readcmd(const string input)
         {
             make(input,sepsemi);
         }
-        else
+        else if(input.find(";") != string::npos)
         {
             make(input,sepNULL);
         }
+        else if(input.find("|") != string::npos)
+        {
+            piper(input);
+        }
+
 }
 
-void make(const string input, const char sep[])
+void make(const string &input, const char sep[])
 {
     char_separator<char> delim(sep);
     tok tokens(input, delim);
@@ -118,7 +124,7 @@ void make(const string input, const char sep[])
     }
 }
 
-void excbash(const string input)
+void excbash(const string &input)
 {
     char *argv[100];
     int count = 0;
@@ -139,6 +145,155 @@ void excbash(const string input)
         exit(1);
     }
 }
+
+void piper(const string &input)
+{
+    int fd[2]
+    int fd2[2]
+    string a = input.substr(0, input.find("|"));
+    string b = input.substr(input.find("|"));
+    
+    if(pipe(fd) == -1)
+    {
+        perror("piping failed");
+        exit(1)
+    }
+    
+    int pid = fork();
+
+    if(pid == -1)
+    {
+        perror("forking failed");
+        exit(1);
+    }
+    else if(pid == 0) 
+    {
+        int in = -1;
+        if(a.find("<<<") == string:npos)
+        {
+            string file = l.substr(l.find("<")+1);
+            l = l.substr(0, l.find("<"));
+            in - openFile(file,O_RDONLY);
+            if(in == -1)
+            {
+                exit(1);
+            }
+            else if (l.find("\"") != string::npos)
+            {
+                cont = input.substr(input.find("\"")+1);
+                if (cont.find("\"") == string::npos)
+                {
+                    cout << "wrong usuage" << endl;
+                    return;
+                }
+                cont = cont.substr(0,cont.find("\""));
+                if(pipe(fd2) == -1)
+                {
+                    perror("piping failed");
+                    exit(1);
+                }
+                char *buffer = new char[cont.size()];
+                strcpy(buffer, cont.c_str());
+                if(write(fd2[1], buffer, strlen(buffer)) == -1)
+                {
+                    perror("writing failed");
+                    exit(1);
+                 }
+                if(close(fd2[1]) == -1)
+                {
+                    perror("closing failed");
+                    exit(1);
+                }
+                in = fd2[0];
+                delete[] buffer;
+            }
+            else
+            {
+                cout "error" << endl;
+                exit(1);
+            }
+        }
+        excIO(a, in, fd[1], -1);
+    }
+    else
+    {
+        if(wait(0) == -1)
+        {
+            perror("waiting failed");
+            exit(1);
+        }
+        if(close(fd[1]) == -1)
+        {
+            perror("closing failed");
+            exit(1);
+        }
+        int std_o = dup(0);
+        if(std_o == -1)
+        {
+            perror("duping failed");
+            exit(1);
+        }
+        if(b.find("|") != string::npos)
+        {
+            if(close(0) == -1)
+            {
+                perror("closing failed");
+                exit(1);
+            }
+            if(dup(fd[0]) == -1)
+            {
+                perror("duping failed");
+                exit(1);
+            }
+            piper(b);
+        }
+        else if (b.find(">") != string::npos)
+        {
+            bool two> = b.find(">>") != string::npos;
+            out(b, two>, fd[0]);
+            return;
+        }
+        else
+        {
+            int pid2 = fork();
+            if(pid2 == -1)
+            {
+                perror("forking failed");
+                exit(1);
+            }
+            if(pid2 == 0)
+            {
+                redirect(b, fd[0], -1, -1);
+            }
+            else
+            {
+                if(wait(0) == -1)
+                {
+                    perror("wait failed");
+                    exit(1);
+                }
+            }
+        }
+        if(close(0) == -1)
+        {
+            perror("close failed");
+            exit(1);
+        }
+        if(close(fd[0]) == -1)
+        {
+            perror("close failed");
+            exit(1);
+        }
+        if(dup(std_o) == -1)
+        {
+            perror("dup failed");
+            exit(1);
+        }
+    }
+
+}
+
+
 
 
 
