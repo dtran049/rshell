@@ -15,6 +15,7 @@
 using namespace std;
 using namespace boost;
 
+#define SEPARATOR char_separator<char>
 #define tok tokenizer<char_separator<char> >
 //typedef tokenizer <char_separator<char> > tok
 
@@ -23,6 +24,7 @@ void readcmd (const string &input);
 void make (const string &input, const char sep[]);
 void excbash(const string &input);
 void piper(const string  &input);
+int open_file(const string &file, int flags)
 int main()
 {
     //cout << "error here";
@@ -146,6 +148,27 @@ void excbash(const string &input)
     }
 }
 
+int open_file(const string &file, int flags)
+{
+    SEPARATOR sep(" ");
+    tok token(file, sep);
+    tok::iterator it = token.begin();
+    if(it == token.end())
+    {
+        cout << "file does not exits" << endl;
+        return -1;
+    }
+    int fd = open((*it).c_str(), flags, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+    if(fd == -1)
+    {
+        perror("open failed");
+        exit(1);
+    }
+    return fd;
+}
+
+
+
 void piper(const string &input)
 {
     int fd[2]
@@ -173,7 +196,7 @@ void piper(const string &input)
         {
             string file = l.substr(l.find("<")+1);
             l = l.substr(0, l.find("<"));
-            in - openFile(file,O_RDONLY);
+            in = open_file(file,O_RDONLY);
             if(in == -1)
             {
                 exit(1);
