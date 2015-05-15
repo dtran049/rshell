@@ -12,6 +12,9 @@
 #include <boost/algorithm/string.hpp>
 #include <errno.h>
 #include <cstdlib>
+#include <fcntl.h>
+#include <errno.h>
+#include <pwd.h>
 using namespace std;
 using namespace boost;
 
@@ -24,7 +27,11 @@ void readcmd (const string &input);
 void make (const string &input, const char sep[]);
 void excbash(const string &input);
 void piper(const string  &input);
-int open_file(const string &file, int flags)
+int open_file(const string &file, int flags);
+void doredir(const string &input, int std_in, int std_out, int std_err);
+void output(const string &input, bool appended, int IN=-1);
+void inp(const string &input, bool three);
+const int SZ = 50;
 int main()
 {
     //cout << "error here";
@@ -94,7 +101,27 @@ void readcmd(const string &input)
         {
             piper(input);
         }
-
+        else if(input.find("<") != string::npos)
+        {
+               inp(input, false);
+        }
+        else if(input.find("<<<") != string::npos)
+        {
+               inp(input,true);
+        }
+        else if(input.find(">") != string::npos)
+        {
+               output(input,false);
+        }
+        else if(input.find(">>") != string::npos)
+        {
+               output(input,true);
+        }
+        else
+        {
+            make(input,"");
+        }
+        
 }
 
 void make(const string &input, const char sep[])
@@ -156,7 +183,7 @@ int open_file(const string &file, int flags)
     if(it == token.end())
     {
         cout << "file does not exits" << endl;
-        return -1;
+        exit(1);
     }
     int fd = open((*it).c_str(), flags, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
     if(fd == -1)
@@ -169,17 +196,260 @@ int open_file(const string &file, int flags)
 
 
 
+
+
+void doredir(const string &input, int std_in, int std_out, int std_err)
+{
+	char *argv[SZ];
+	SEPARATOR sep (" ");
+	tok token(input,sep);
+	tok::iterator it = token.begin();
+	if(it == token.end())
+	{
+		cout << "no commands" << endl;
+		exit(1);
+	}
+    int i = 0;
+	for(; it != token.end(); ++it, i++)
+	{
+		argv[i] = new char[(*it).size()];
+		strcpy(argv[i], (*it).c_str());
+	}
+	argv[i] = NULL;
+	if(std_in >= 0)
+	{
+		if(close(0) == -1)
+		{
+			perror("close failed");
+			exit(1);
+		}
+		if(dup(std_in) == -1)
+		{
+			perror("dup failed");
+			exit(1);
+		}
+	}
+    if(std_out >= 0)
+	{
+		if(close(0) == -1)
+		{
+			perror("close failed");
+			exit(1);
+		}
+		if(dup(std_out) == -1)
+		{
+			perror("dup failed");
+			exit(1);
+		}
+	}
+	if(std_err >= 0)
+	{
+		if(close(0) == -1)
+		{
+			perror("close failed");
+			exit(1);
+		}
+		if(dup(std_err) == -1)
+		{
+			perror("dup failed");
+			exit(1);
+		}
+	}
+	execvp(argv[0], argv);
+	perror("execvp failed");
+	for(i = 0, it = token.begin(); it != token.end(); ++it, i++)
+	{
+		delete[] argv[i];
+	}
+	exit(1);
+}
+
+void inp(const string &input, bool three)
+{
+	string x = "<";
+	string cont;
+	int OUT = -1;
+	int IN = -1;
+	int fd2[2];
+	if(three)
+	{
+    x = "<<<";
+	if(input.find("\"") != string::npos)
+	{
+		cont = input.substr(input.find("\"")+1);
+		if(cont.find("\"") == string::npos)
+		{
+			cout << "error" << endl;
+			return;
+		}
+		cont = cont.substr(0,cont.find("\""));
+		if(pipe(fd2) == -1)
+		{
+			perror("piping failed");
+			exit(1);
+		}
+		char *buffer = new char[cont.size()];
+		strcpy(buffer, cont.c_str());
+		if(write(fd2[1], buffer, strlen(buffer) == -1))
+		{
+			perror("write failed");
+			exit(1);
+		}
+		if(close(fd2[1]) == -1)
+		{
+			perror("closing failed");
+			exit(1);
+		}
+		IN = fd2[0];
+		delete[] buffer;
+	}
+	else
+	{
+		cout << "error" << endl;
+		return;
+	}
+    }
+	string a = input.substr(0,input.find(x));
+	string b = input.substr(input.find(x) + x.size());
+	string replaced = b;
+	if(!three)
+    {
+		IN = open_file(replaced, O_RDONLY);
+		if(IN == -1)
+		{
+			return;
+		}
+	}
+	if(b.find(">") != string::npos)
+	{
+		replaced = replaced.substr(0,b.find(">"));
+		int signal = O_RDWR | O_CREAT;
+		int here = -1;
+		if(b.find(">>") != string::npos)
+		{
+			here |= O_APPEND;
+			signal = b.find(">>")+2;
+		}
+		else
+		{
+			signal = b.find(">") +1;
+			signal |= O_TRUNC;
+		}
+		b = b.substr(signal);
+		OUT = open_file(b, signal);
+		if(OUT == -1)
+		{
+			return;
+		}
+	}
+	int pid = fork();
+	if(pid == -1)
+	{
+		perror("forking failed");
+		exit(1);
+	}
+	else if (pid == 0)
+	{
+		doredir(a, IN, OUT, -1);
+	}
+	else
+	{
+		if(wait(0) == -1)
+		{
+			perror("wait failed");
+			exit(1);
+		}
+		if(IN != -1)
+		{
+			if(close(IN) == -1)
+			{
+                perror("close failed");
+				exit(1);
+			}
+		}
+		if(OUT != -1)
+		{
+			if(close(OUT) == -1)
+			{
+				perror("close failed");
+				exit(1);
+			}
+		}
+	}
+}
+
+void output(const string &input, bool appended, int IN)
+{
+	string cmd;
+	int signal = O_RDWR | O_CREAT;
+	if(appended)
+	{
+		cmd = ">>";
+		signal |= O_APPEND;
+	}
+	else
+	{
+		cmd = ">";
+		signal |= O_TRUNC;
+	}
+	int here = input.find(cmd);
+	if(input.find("2>") != string::npos)
+	{
+		here--;
+	}
+	if(input.find("1>") != string::npos)
+	{
+		here--;
+	}
+	string a = input.substr(0,here);
+	string b = input.substr(input.find(cmd) + cmd.size());
+	int fd = open_file(b, signal);
+	if(fd == -1)
+	{
+		return;
+	}
+	int pid = fork();
+	if(pid == -1)
+	{
+		perror("forking failed");
+		exit(1);
+	}
+	else if (pid == 0)
+	{
+		if(input.find("2>") != string::npos)
+		{
+			doredir(a, IN, -1, fd);
+		}
+		else
+		{
+			doredir(a, IN, fd, -1);
+		}
+	}
+	else
+	{
+		if(wait(0) == -1)
+        {
+			perror("wait failed");
+			exit(1);
+		}
+		if(close(fd) == -1)
+		{
+			perror("close failed");
+			exit(1);
+		}
+	}
+}
 void piper(const string &input)
 {
-    int fd[2]
-    int fd2[2]
+    int fd[2];
+    int fd2[2];
     string a = input.substr(0, input.find("|"));
-    string b = input.substr(input.find("|"));
+    string b = input.substr(input.find("|")+1);
     
     if(pipe(fd) == -1)
     {
         perror("piping failed");
-        exit(1)
+        exit(1);
     }
     
     int pid = fork();
@@ -192,16 +462,19 @@ void piper(const string &input)
     else if(pid == 0) 
     {
         int in = -1;
-        if(a.find("<<<") == string:npos)
+        if(a.find("<") != string::npos)
         {
-            string file = l.substr(l.find("<")+1);
-            l = l.substr(0, l.find("<"));
+        string cont;
+        if(a.find("<<<") == string::npos)
+        {
+            string file = a.substr(a.find("<")+1);
+            a = a.substr(0, a.find("<"));
             in = open_file(file,O_RDONLY);
             if(in == -1)
             {
                 exit(1);
             }
-            else if (l.find("\"") != string::npos)
+            else if (a.find("\"") != string::npos)
             {
                 cont = input.substr(input.find("\"")+1);
                 if (cont.find("\"") == string::npos)
@@ -232,11 +505,12 @@ void piper(const string &input)
             }
             else
             {
-                cout "error" << endl;
+                cout << "error" << endl;
                 exit(1);
             }
         }
-        excIO(a, in, fd[1], -1);
+        }
+        doredir(a, in, fd[1], -1);
     }
     else
     {
@@ -272,8 +546,8 @@ void piper(const string &input)
         }
         else if (b.find(">") != string::npos)
         {
-            bool two> = b.find(">>") != string::npos;
-            out(b, two>, fd[0]);
+            bool twoI = b.find(">>") != string::npos;
+            output(b, twoI, fd[0]);
             return;
         }
         else
@@ -286,7 +560,7 @@ void piper(const string &input)
             }
             if(pid2 == 0)
             {
-                redirect(b, fd[0], -1, -1);
+               doredir(b, fd[0], -1, -1);
             }
             else
             {
@@ -315,9 +589,5 @@ void piper(const string &input)
     }
 
 }
-
-
-
-
 
 
