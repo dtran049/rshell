@@ -290,7 +290,7 @@ void inp(const string &input, bool three)
 		}
 		char *buffer = new char[cont.size()];
 		strcpy(buffer, cont.c_str());
-		if(write(fd2[1], buffer, strlen(buffer) == -1))
+		if(write(fd2[1], buffer, strlen(buffer)) == -1)
 		{
 			perror("write failed");
 			exit(1);
