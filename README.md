@@ -18,4 +18,5 @@ bin/rshell
 5. echo command will echo connectors sometimes
 6. `||` and `&&` will give bad logic 
 7. tabs will not count as white space
-
+8. ">>" does not work
+9. testing of 2> is not in piping.script but it works
