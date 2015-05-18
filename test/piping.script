@@ -1,0 +1,152 @@
+Script started on Sun 17 May 2015 07:46:56 PM PDT
+~
+dtran049@hammer $ cs100
+[0;91m
+===============================================================================
+|                                                                             |
+| You have enabled settings specific for cs100.  Everything you do is being   |
+| recorded to measure your progress in the class.                             |
+|                                                                             |
+| Important commands for the class:                                           |
+|   * calcgrade.sh          displays a detailed breakdown of your grade       |
+|   * checksyscalls.sh      is your cpp file doing proper error checking?     |
+|   * typespeed             practice typing unix commands                     |
+|                                                                             |
+| Important commands for general C++ programming:                             |
+|   * make                  don't call g++ manually; let make do the work!    |
+|   * gdb                   the GNU debugger                                  |
+|   * valgrind              get rid of your memory leaks                      |
+|   * cppcheck              static analysis tool                              |
+|   * man                   find help about any syscall / terminal command    |
+|                                                                             |
+===============================================================================
+[0m
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~[0;95m [0;36m$[0m cd cs[K[Krealcs100/cs100/rshell
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~/realcs100/cs100/rshell[0;95m (redirect) [0;36m$[0m make
+mkdir -p ./bin
+g++ -Wall -Werror -ansi  -pedantic ./src/rshell.cpp -o ./bin/rshell
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~/realcs100/cs100/rshell[0;95m (redirect) [0;36m$[0m bin/rshell
+dtran049@hostname $ #testing > with non e   e nexistant file
+dtran049@hostname $ ls
+>  bin	existingfile  LICENSE  makefile  >newout3  >outfile3  piping.script  README.md	src  test  >testout
+dtran049@hostname $ ls > newout
+dtran049@hostname $ cat newout
+>
+bin
+existingfile
+LICENSE
+makefile
+newout
+>newout3
+>outfile3
+piping.script
+README.md
+src
+test
+>testout
+dtran049@hostname $ #  testing > on existant file
+dtran049@hostname $ ls >>  ca  newout
+dtran049@hostname $ cat   ls >   -a > newout
+dtran049@hostname $ cat newout
+>
+.
+..
+bin
+existingfile
+.git
+LICENSE
+makefile
+newout
+>newout3
+.nfs00000000000265ec0000053f
+>outfile3
+piping.script
+README.md
+src
+test
+>testout
+dtran049@hostname $   #testing >> on nonexistant file
+dtran049@hostname $ ls >> newout2
+dtran049@hostname $ cat newout2
+cat: newout2: No such file or directory
+dtran049@hostname $ #testing >> on existing file
+dtran049@hostname $ ls >> newout
+dtran049@hostname $ cat newout
+>
+.
+..
+bin
+existingfile
+.git
+LICENSE
+makefile
+newout
+>newout3
+.nfs00000000000265ec0000053f
+>outfile3
+piping.script
+README.md
+src
+test
+>testout
+dtran049@hostname $ #testing no whitespace on > and >>
+dtran049@hostname $ ls  >newout3
+dtran049@hostname $ cat newout3
+>
+bin
+existingfile
+LICENSE
+makefile
+newout
+newout3
+>newout3
+>outfile3
+piping.script
+README.md
+src
+test
+>testout
+dtran049@hostname $ ls  >>newout3
+dtran049@hostname $ cat newout3
+>
+bin
+existingfile
+LICENSE
+makefile
+newout
+newout3
+>newout3
+>outfile3
+piping.script
+README.md
+src
+test
+>testout
+dtran049@hostname $ #testing pipe
+dtran049@hostname $ ls | grep new
+newout
+newout3
+>newout3
+dtran049@hostname $ #testing ">" "<" and "|" together an                 multiple | :|  "|" together
+dtran049@hostname $ cat < existingfile | tr a-z A-Z | tee newfile1
+THIS IS A TEST
+dtran049@hostname $ cat newfile1
+THIS IS A TEST
+dtran049@hostname $ cat existingfile
+this is a test
+dtran049@hostname $ cat < existingfile | tr   tr                      testin      # also with and withoutwhtie s        whitespace ine  between
+dtran049@hostname $ cat < existingfile |tra=   A-Z a-z| tee newfile2 | tr a-z A-z Z > newfile3
+dtran049@hostname $ cat existingfile
+this is a test
+dtran049@hostname $ catne   newfile2
+this is a test
+dtran049@hostname $ cat newfile3
+THIS IS A TEST
+dtran049@hostname $ exit
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~/realcs100/cs100/rshell[0;95m (redirect) [0;36m$[0m exit
+exit
+~
+dtran049@hammer $ exit
+exit
+
+Script done on Sun 17 May 2015 07:53:43 PM PDT
