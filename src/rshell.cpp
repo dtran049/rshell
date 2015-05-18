@@ -183,13 +183,12 @@ int open_file(const string &file, int flags)
     if(it == token.end())
     {
         cout << "file does not exits" << endl;
-        exit(1);
+        return -1;
     }
     int fd = open((*it).c_str(), flags, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
     if(fd == -1)
     {
         perror("open failed");
-        exit(1);
     }
     return fd;
 }
@@ -231,7 +230,7 @@ void doredir(const string &input, int std_in, int std_out, int std_err)
 	}
     if(std_out >= 0)
 	{
-		if(close(0) == -1)
+		if(close(1) == -1)
 		{
 			perror("close failed");
 			exit(1);
@@ -244,7 +243,7 @@ void doredir(const string &input, int std_in, int std_out, int std_err)
 	}
 	if(std_err >= 0)
 	{
-		if(close(0) == -1)
+		if(close(2) == -1)
 		{
 			perror("close failed");
 			exit(1);
@@ -273,41 +272,41 @@ void inp(const string &input, bool three)
 	int fd2[2];
 	if(three)
 	{
-    x = "<<<";
-	if(input.find("\"") != string::npos)
-	{
-		cont = input.substr(input.find("\"")+1);
-		if(cont.find("\"") == string::npos)
-		{
-			cout << "error" << endl;
-			return;
-		}
-		cont = cont.substr(0,cont.find("\""));
-		if(pipe(fd2) == -1)
-		{
-			perror("piping failed");
-			exit(1);
-		}
-		char *buffer = new char[cont.size()];
-		strcpy(buffer, cont.c_str());
-		if(write(fd2[1], buffer, strlen(buffer)) == -1)
-		{
-			perror("write failed");
-			exit(1);
-		}
-		if(close(fd2[1]) == -1)
-		{
-			perror("closing failed");
-			exit(1);
-		}
-		IN = fd2[0];
-		delete[] buffer;
-	}
-	else
-	{
-		cout << "error" << endl;
-		return;
-	}
+        x = "<<<";
+	    if(input.find("\"") != string::npos)
+	    {
+		    cont = input.substr(input.find("\"")+1);
+		    if(cont.find("\"") == string::npos)
+		    {
+			    cout << "error" << endl;
+			    return;
+		    }
+		    cont = cont.substr(0,cont.find("\""));
+		    if(pipe(fd2) == -1)
+		    {
+			    perror("piping failed");
+			    exit(1);
+		    }
+		    char *buffer = new char[cont.size()];
+		    strcpy(buffer, cont.c_str());
+		    if(write(fd2[1], buffer, strlen(buffer)) == -1)
+		    {
+			    perror("write failed");
+			    exit(1);
+		    }
+		    if(close(fd2[1]) == -1)
+		    {
+			    perror("closing failed");
+			    exit(1);
+		    }
+		    IN = fd2[0];
+		    delete[] buffer;
+	    }
+	    else
+	    {
+		    cout << "error" << endl;
+		    return;
+	    }
     }
 	string a = input.substr(0,input.find(x));
 	string b = input.substr(input.find(x) + x.size());
@@ -323,7 +322,7 @@ void inp(const string &input, bool three)
 	if(b.find(">") != string::npos)
 	{
 		replaced = replaced.substr(0,b.find(">"));
-		int signal = O_RDWR | O_CREAT;
+		int signal = O_RDWR|O_CREAT;
 		int here = -1;
 		if(b.find(">>") != string::npos)
 		{
@@ -381,7 +380,7 @@ void inp(const string &input, bool three)
 void output(const string &input, bool appended, int IN)
 {
 	string cmd;
-	int signal = O_RDWR | O_CREAT;
+	int signal = O_RDWR|O_CREAT;
 	if(appended)
 	{
 		cmd = ">>";
@@ -395,11 +394,11 @@ void output(const string &input, bool appended, int IN)
 	int here = input.find(cmd);
 	if(input.find("2>") != string::npos)
 	{
-		here--;
+		--here;
 	}
 	if(input.find("1>") != string::npos)
 	{
-		here--;
+		--here;
 	}
 	string a = input.substr(0,here);
 	string b = input.substr(input.find(cmd) + cmd.size());
@@ -464,51 +463,51 @@ void piper(const string &input)
         int in = -1;
         if(a.find("<") != string::npos)
         {
-        string cont;
-        if(a.find("<<<") == string::npos)
-        {
-            string file = a.substr(a.find("<")+1);
-            a = a.substr(0, a.find("<"));
-            in = open_file(file,O_RDONLY);
-            if(in == -1)
-            {
-                exit(1);
-            }
-            else if (a.find("\"") != string::npos)
-            {
-                cont = input.substr(input.find("\"")+1);
-                if (cont.find("\"") == string::npos)
+            string cont;
+             if(a.find("<<<") == string::npos)
+             {
+                string file = a.substr(a.find("<")+1);
+                a = a.substr(0, a.find("<"));
+                in = open_file(file,O_RDONLY);
+                if(in == -1)
                 {
-                    cout << "wrong usuage" << endl;
-                    return;
-                }
-                cont = cont.substr(0,cont.find("\""));
-                if(pipe(fd2) == -1)
-                {
-                    perror("piping failed");
                     exit(1);
                 }
-                char *buffer = new char[cont.size()];
-                strcpy(buffer, cont.c_str());
-                if(write(fd2[1], buffer, strlen(buffer)) == -1)
-                {
+             }
+             else if (a.find("\"") != string::npos)
+             {
+                 cont = input.substr(input.find("\"")+1);
+                 if (cont.find("\"") == string::npos)
+                 {
+                    cout << "wrong usuage" << endl;
+                     return;
+                 }
+                 cont = cont.substr(0,cont.find("\""));
+                 if(pipe(fd2) == -1)
+                 {
+                    perror("piping failed");
+                    exit(1);
+                 }
+                 char *buffer = new char[cont.size()];
+                 strcpy(buffer, cont.c_str());
+                 if(write(fd2[1], buffer, strlen(buffer)) == -1)
+                 {
                     perror("writing failed");
                     exit(1);
                  }
-                if(close(fd2[1]) == -1)
-                {
+                 if(close(fd2[1]) == -1)
+                 {
                     perror("closing failed");
                     exit(1);
+                 }
+                 in = fd2[0];
+                 delete[] buffer;
                 }
-                in = fd2[0];
-                delete[] buffer;
-            }
-            else
-            {
+             else
+             {
                 cout << "error" << endl;
                 exit(1);
-            }
-        }
+             }
         }
         doredir(a, in, fd[1], -1);
     }
