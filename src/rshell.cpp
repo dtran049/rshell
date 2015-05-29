@@ -15,6 +15,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <pwd.h>
+#include <dirent.h>
+#include <signal.h>
 using namespace std;
 using namespace boost;
 
@@ -31,14 +33,54 @@ int open_file(const string &file, int flags);
 void doredir(const string &input, int std_in, int std_out, int std_err);
 void output(const string &input, bool appended, int IN=-1);
 void inp(const string &input, bool three);
+void SIG_C(int signum);
+void SIG_Z(int signum);
+string makepath (string file);
+void tilda(string &s);
+
 const int SZ = 50;
+pid_t CID = 0;
+int pipefd[2];
+
+void SIG_C(int signum)
+{
+    if(CID != 0)
+    {
+        kill(CID, SIGKILL);
+        PIDT= 0;
+    }
+}
+
+void SIG_Z(int signum)
+{
+    if(PIDT != 0)
+    {
+        kill(PIDT, SIGSTOP)
+        cout << "Successfully stopped" << endl;
+    }
+}
+
+
+
+
 int main()
 {
+    if(SIG_ERR == signal(SIGINT, SIG_C))
+    {
+        perror("signal failed");
+        exit(1);
+    }
+    if(SIG_ERR == signal(SIGTSTP, SIG_Z))
+    {
+        perror("signal failed");
+        exit(1);
+    }
     //cout << "error here";
     string input;
     //get userid and hostname
-    char hostname[128];
-	gethostname(hostname, sizeof(hostname));
+    char hostname[SZ];
+    struct passwd *pass = getpwuid(getuid());
+	host = gethostname(hostname, sizeof(hostname));
     if (gethostname(hostname, sizeof(hostname)))
     {
         perror("gethostname() failed");
@@ -55,9 +97,17 @@ int main()
 	//getline(cin,loginID);
 	bool escape = false;
 	//cout << "error here";
+    char curdir[BUFSIZ];
+    if(getcwd(curdir, BUFSIZ) == NULL)
+    {
+        perror("getcwd failed");
+        exit(1);
+    }
+
     while(!escape)
 	{
-		cout <<loginID << "@" << "hostname" << " $ ";
+		cout <<loginID << "@" << "hostname" << curdir;
+
 		getline(cin, input);
 		trim(input);
 		if(input == "exit")
@@ -117,11 +167,38 @@ void readcmd(const string &input)
         {
                output(input,true);
         }
+        else if(input.find("fg") != string::npos)
+        {
+            if(CID != 0)
+            {
+                kill(CID, SIGCONT)
+            }
+            else
+            {
+                cout << "No process to fg" << endl;
+            }
+        }
+        else if(input.find("bg") != string::npos)
+        {
+            if(CID != 0)
+            {
+                kill(CID, SIGCONT);
+                CID = 0;
+            }
+            else
+            {
+                cout << "no process to bg" << endl;
+            }
+        }
         else
         {
             make(input,"");
         }
-        
+        if(getcwd(curdir, BUFSIZ) == NULL)
+        {
+            perror("getcwd failed")
+            exit(1);
+        }
 }
 
 void make(const string &input, const char sep[])
@@ -131,7 +208,13 @@ void make(const string &input, const char sep[])
 
     for(tok::iterator it = tokens.begin(); it != tokens.end(); it++)
     {
+        if(-1 == pipe(pipefd))
+        {
+            perror("piping failed");
+            exit(1);
+        }
         int pid = fork();
+        CID = pid;
         if(pid == -1)
         {
             perror("fork failed");
@@ -144,10 +227,36 @@ void make(const string &input, const char sep[])
         }
         else
         {
-            if(wait(0) == -1)
+            int status = 0;
+            if(waitpid(pid, &status, WUNTRACED) == -1)
             {
                 perror("wait failed");
                 exit(1);
+            }
+            if(WIFEXITED(status) && WEXITSTATUS(status) == 5)
+            {
+                char result[BUFSIZ];
+                memset(result,0,BUFSIZ);
+                if(-1 == close(pipefd[1]))
+                {
+                    perror("closing failed");
+                    exit(1);
+                }
+                if(-1 == read(pipefd[0], result, BUFSIZ))
+                {
+                    perror("read failed");
+                    exit(1);
+                }
+                if(-1 == close(pipefd[0]))
+                {
+                    perror("close failed");
+                    exit(1);
+                }
+                if(-1 == chdir(result))
+                {
+                    perror("chdir failed");
+                    return;
+                }
             }
         }
     }
@@ -160,17 +269,64 @@ void excbash(const string &input)
     char_separator<char> space(" ");
     
     tok tokens(input, space);
-    for(tok::iterator it = tokens.begin(); it != tokens.end(); it++)
+    tok::iterator it = token.begin();
+    if(it != token.end())
+    {
+        if((*it) == "exit")
+        {
+            exit(10);
+        }
+        if((*it) == "cd")
+        {
+            it++;
+            if(it == token.end())
+            {
+                string home = "~";
+                tilda(home);
+                if(-1 == write(pipe[1], home.c_str(), home.size()))
+                {
+                    perror("write failed");
+                    exit(1);
+                }
+                if( -1 == close(pipefd[0]))
+                {
+                    perror("close failed");
+                    exit(1);
+                }
+            }
+            else
+            {
+                string change = *it;
+                if(change.at(0) == '~')
+                {
+                    tilda(change);
+                }
+                if(-1 == write(pipefd[1], change.str(), change.size()))
+                {
+                    perror("write failed");
+                    exit(1);
+                }
+            }
+            exit(5);
+        }
+    }
+    for(; it != tokens.end();count++ it++)
     {
         argv[count] = new char[(*it).size()];
         strcpy(argv[count], (*it).c_str());
-        count++;
+        //count++;
     }
 
     argv[count] = 0;
-    if (execvp(argv[0], argv) == -1)
+
+    string first = makepath(argv[0]);
+    if (execvp(first.c_str(), argv) == -1)
     {
-        perror("execvp failed");
+        perror(argv[0]);
+        for(count = 0, it = token.begin(); it != token.end(); count++, it++)
+        {
+            delete[] argv[count];
+        }
         exit(1);
     }
 }
@@ -589,4 +745,27 @@ void piper(const string &input)
 
 }
 
+void makepath (string file)
+{
+}
 
+
+void tilda(string &s)
+{
+    char *h = getenv("HOME");
+    if(h == NULL)
+    {
+        perror("getenv failed");
+        exit(1);
+    }
+    string home = h;
+    home += "/";
+    if(s.find("~/") == 0)
+    {
+        s.replace(0,2,home,0,home.size(););
+    }
+    else if (s.find("~") == 0)
+    {
+        s.replace(0,1,home,0,home.size());
+    }
+}
