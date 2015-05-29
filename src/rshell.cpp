@@ -747,6 +747,31 @@ void piper(const string &input)
 
 void makepath (string file)
 {
+    char *path = getenv("PATH");
+    if(path == NULL)
+    {
+        perror("getenv failed");
+        exit(1);
+    }
+    string tmp = path;
+    SEPARATOR sep(":");
+    tok token(tmp, sep);
+    tok::iterator it = token.begin();
+    for(;it != token.end(); it++)
+    {
+        string tmp2 = *it + "/" + file;
+        struct stat buf;
+        if(stat(tmp2.c_str(), &buf))
+        {
+            continue;
+            perror("stat failed");
+        }
+        else
+        {
+            return tmp2;
+        }
+    }
+    return file;
 }
 
 
