@@ -1,0 +1,106 @@
+Script started on Fri 29 May 2015 04:24:01 PM PDT
+~
+dtran049@hammer $ cs100
+[0;91m
+===============================================================================
+|                                                                             |
+| You have enabled settings specific for cs100.  Everything you do is being   |
+| recorded to measure your progress in the class.                             |
+|                                                                             |
+| Important commands for the class:                                           |
+|   * calcgrade.sh          displays a detailed breakdown of your grade       |
+|   * checksyscalls.sh      is your cpp file doing proper error checking?     |
+|   * typespeed             practice typing unix commands                     |
+|                                                                             |
+| Important commands for general C++ programming:                             |
+|   * make                  don't call g++ manually; let make do the work!    |
+|   * gdb                   the GNU debugger                                  |
+|   * valgrind              get rid of your memory leaks                      |
+|   * cppcheck              static analysis tool                              |
+|   * man                   find help about any syscall / terminal command    |
+|                                                                             |
+===============================================================================
+[0m
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~[0;95m [0;36m$[0m cd cs[K[Krealcs100/cs100/rshell/
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~/realcs100/cs100/rshell[0;95m (master) [0;36m$[0m bin/rshell 
+do_ypcall: clnt_call: RPC: Unable to send; errno = Operation not permitted
+dtran049@hostname/home/csmajs/dtran049/realcs100/cs100/rshell $ #testing cd
+dtran049@hostname/home/csmajs/dtran049/realcs100/cs100/rshell $ ls
+>  bin	file  LICENSE  makefile  >newout3  >outfile3  ps  README.md  signals.script  src  test	>testout
+dtran049@hostname/home/csmajs/dtran049/realcs100/cs100/rshell $ pwd
+/home/csmajs/dtran049/realcs100/cs100/rshell
+dtran049@hostname/home/csmajs/dtran049/realcs100/cs100/rshell $ cd ..
+dtran049@hostname/home/csmajs/dtran049/realcs100/cs100 $ pwd
+/home/csmajs/dtran049/realcs100/cs100
+dtran049@hostname/home/csmajs/dtran049/realcs100/cs100 $ cd ..
+dtran049@hostname/home/csmajs/dtran049/realcs100 $ pwd
+/home/csmajs/dtran049/realcs100
+dtran049@hostname/home/csmajs/dtran049/realcs100 $ cd cs100/	 /rshell
+dtran049@hostname/home/csmajs/dtran049/realcs100/cs100/rshell $ ls
+>  bin	file  LICENSE  makefile  >newout3  >outfile3  ps  README.md  signals.script  src  test	>testout
+dtran049@hostname/home/csmajs/dtran049/realcs100/cs100/rshell $ pwd
+/home/csmajs/dtran049/realcs100/cs100/rshell
+dtran049@hostname/home/csmajs/dtran049/realcs100/cs100/rshell $ cd
+dtran049@hostname/home/csmajs/dtran049 $ pwd
+/home/csmajs/dtran049
+dtran049@hostname/home/csmajs/dtran049 $ cd -
+chdir failed: No such file or directory
+dtran049@hostname/home/csmajs/dtran049 $ #testing cat   ^C
+dtran049@hostname/home/csmajs/dtran049 $ cat
+s
+s
+s
+s
+s ^Cdtran049@hostname/home/csmajs/dtran049 $ ps
+  PID TTY          TIME CMD
+32575 pts/14   00:00:00 bash
+32651 pts/14   00:00:00 rshell
+33525 pts/14   00:00:00 ps
+dtran049@hostname/home/csmajs/dtran049 $ cat   ^^  #testing ^Z
+dtran049@hostname/home/csmajs/dtran049 $ cat
+ss
+ss
+ss
+ss
+^ZProgram successfully stopped
+dtran049@hostname/home/csmajs/dtran049 $ ps
+  PID TTY          TIME CMD
+32575 pts/14   00:00:00 bash
+32651 pts/14   00:00:00 rshell
+33549 pts/14   00:00:00 cat
+33558 pts/14   00:00:00 ps
+dtran049@hostname/home/csmajs/dtran049 $ #testing g fg and bg
+dtran049@hostname/home/csmajs/dtran049 $ fg
+dtran049@hostname/home/csmajs/dtran049 $ s
+s: No such file or directory
+dtran049@hostname/home/csmajs/dtran049 $ s
+s
+s
+s: No such file or directory
+dtran049@hostname/home/csmajs/dtran049 $ bg
+bg
+^CControl C failed: No such process
+ds
+ds: No such file or directory
+dtran049@hostname/home/csmajs/dtran049 $ ps
+  PID TTY          TIME CMD
+32575 pts/14   00:00:00 bash
+32651 pts/14   00:00:00 rshell
+33549 pts/14   00:00:00 cat <defunct>
+33593 pts/14   00:00:00 ps
+dtran049@hostname/home/csmajs/dtran049 $ quit
+quit: No such file or directory
+dtran049@hostname/home/csmajs/dtran049 $ quit
+quit: No such file or directory
+dtran049@hostname/home/csmajs/dtran049 $ quit
+quit: No such file or directory
+dtran049@hostname/home/csmajs/dtran049 $ exit
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~/realcs100/cs100/rshell[0;95m (master) [0;36m$[0m quit
+bash: quit: command not found
+[s%%%%%%%%%%[u[0;32mdtran049[0;36m@[0;32mcs100[0;36m:[0;32m~/realcs100/cs100/rshell[0;95m (master) [0;36m$[0m exit
+exit
+~
+dtran049@hammer $ exit
+exit
+
+Script done on Fri 29 May 2015 04:26:48 PM PDT

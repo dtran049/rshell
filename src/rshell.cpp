@@ -208,7 +208,7 @@ void readcmd(const string &input, char *currentdir)
         }
         else if(input.find("fg") != string::npos)
         {
-            cout << CID << endl;
+           // cout << CID << endl;
             if(!IDHOLDER.empty())
             {
                 tempC = IDHOLDER.front();
